@@ -19,19 +19,27 @@ const uploads = multer({ storage });
 
 const createRouter = () => {
   router.get("/", async (req, res) => {
-    const results = await artist.find();
-    res.send(results);
+    try {
+      const results = await artist.find();
+      res.send(results);
+    } catch {
+      res.sendStatus(500);
+    }
   });
   router.post("/", uploads.single("image"), async (req, res) => {
-    const result = { ...req.body };
-    const newArtist = new artist(result);
-    if (req.file) {
-      newArtist.image = req.file.filename;
+    try {
+      const result = { ...req.body };
+      const newArtist = new artist(result);
+      if (req.file) {
+        newArtist.image = req.file.filename;
+      }
+      await newArtist.save();
+      res.send(newArtist);
+    } catch {
+      res.sendStatus(404);
     }
-    res.send(newArtist);
   });
   return router;
 };
 
 module.exports = createRouter;
-
