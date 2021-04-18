@@ -6,4 +6,3 @@ module.exports = {
   rootPath,
   uploadPath: path.join(rootPath, "public", "uploads"),
 };
-

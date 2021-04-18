@@ -13,9 +13,8 @@ const ArtistSchema = new Schema({
   description: {
     type: String,
     required: true,
-  }
+  },
 });
 
 const Artist = mongoose.model("artist", ArtistSchema);
 module.exports = Artist;
-

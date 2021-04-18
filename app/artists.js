@@ -26,17 +26,42 @@ const createRouter = () => {
       res.sendStatus(500);
     }
   });
+  router.get("/:id", async (req, res) => {
+    try {
+      const results = await artist.findById(req.params.id);
+      res.send(results);
+    } catch {
+      res.sendStatus(500);
+    }
+  });
   router.post("/", uploads.single("image"), async (req, res) => {
     try {
       const result = { ...req.body };
       const newArtist = new artist(result);
       if (req.file) {
         newArtist.image = req.file.filename;
-      }
+      };
       await newArtist.save();
       res.send(newArtist);
     } catch {
       res.sendStatus(404);
+    }
+  });
+  router.put("/:id", uploads.single("image"), async (req, res) => {
+    try {
+      const result = { ...req.body };
+      const newArtist = await artist.findByIdAndUpdate(req.params.id, result);
+      res.send(newArtist);
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  });
+  router.delete("/:id", async (req, res) => {
+    try {
+      await artist.findByIdAndDelete(req.params.id);
+      res.send(`Artist with id ${req.params.id} deleted successfully`);
+    } catch (e) {
+      res.status(400).send(e);
     }
   });
   return router;

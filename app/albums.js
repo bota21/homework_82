@@ -3,9 +3,9 @@ const router = express.Router();
 const { nanoid } = require("nanoid");
 const multer = require("multer");
 const path = require("path");
-const config = require('../config'); 
+const config = require("../config");
 const album = require("../models/albumDB");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -21,19 +21,21 @@ const uploads = multer({ storage });
 const createRouter = () => {
   router.get("/", async (req, res) => {
     try {
-      const results = await album.find().populate('artist');
-     if(req.query.artist) {
-       const queryArtist = await album.find({artist: {_id: {$eq: req.query.artist} }});
-      res.send(queryArtist);
-     } 
-      res.send(results); 
+      const results = await album.find().populate("artist");
+      if (req.query.artist) {
+        const queryArtist = await album.find({
+          artist: { _id:  req.query.artist },
+        });
+        res.send(queryArtist);
+      }
+      res.send(results);
     } catch (e) {
       res.status(500).send(e);
     }
   });
   router.get("/:id", async (req, res) => {
     try {
-      const results = await album.findById(req.params.id).populate('artist');
+      const results = await album.findById(req.params.id).populate("artist");
       res.send(results);
     } catch (e) {
       res.status(500).send(e);
@@ -48,11 +50,28 @@ const createRouter = () => {
       }
       await newAlbum.save();
       res.send(newAlbum);
-    } catch (e){
-      res.status(404).send(e); 
+    } catch (e) {
+      res.status(404).send(e);
+    }
+  });
+  router.put("/:id", uploads.single("cover"), async (req, res) => {
+    try {
+      const result = { ...req.body };
+      const newAlbum = await album.findByIdAndUpdate(req.params.id, result);
+      res.send(newAlbum);
+    } catch (e) {
+      res.status(400).send(e);
+    }
+  });
+  router.delete("/:id", async (req, res) => {
+    try {
+      await album.findByIdAndDelete(req.params.id);
+      res.send(`Album with id ${req.params.id} deleted successfully`);
+    } catch (e) {
+      res.status(400).send(e);
     }
   });
   return router;
 };
 
-module.exports = createRouter; 
+module.exports = createRouter;
