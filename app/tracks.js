@@ -11,7 +11,7 @@ const createRouter = () => {
           album: { _id: req.query.album },
         });
         res.send(queryAlbum);
-      }
+      };
       res.send(results);
     } catch (e) {
       res.status(500).send(e);
@@ -28,9 +28,12 @@ const createRouter = () => {
   router.post("/", async (req, res) => {
     try {
       const result = { ...req.body };
-      const newTrack = new track(result);
-      await newTrack.save();
-      res.send(newTrack);
+      const oldTrack = track.findOne({ title: req.body.title });
+      if (!oldTrack) {
+        const newTrack = new track(result);
+        await newTrack.save();
+        res.send(newTrack);
+      } else res.send({ message: "Track has been already created" });
     } catch (e) {
       res.status(404).send(e);
     }

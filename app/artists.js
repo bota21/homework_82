@@ -37,12 +37,16 @@ const createRouter = () => {
   router.post("/", uploads.single("image"), async (req, res) => {
     try {
       const result = { ...req.body };
-      const newArtist = new artist(result);
-      if (req.file) {
-        newArtist.image = req.file.filename;
-      };
-      await newArtist.save();
-      res.send(newArtist);
+      const oldArtist = await artist.findOne({title: req.body.title});
+      if(!oldArtist) {
+        const newArtist = new artist(result);
+        if (req.file) {
+          newArtist.image = req.file.filename;
+        };
+        await newArtist.save();
+        res.send(newArtist); 
+      } else res.send({ message: "Artist has been already created" });
+            
     } catch {
       res.sendStatus(404);
     }
