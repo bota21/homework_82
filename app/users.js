@@ -26,7 +26,8 @@ const createRouter = () => {
     if (!isMatch) {
       return res.status(400).send("Wrong password");
     };
-
+    user.generateToken();
+    await user.save();
     return res.send("Authentication passed");
   });
 

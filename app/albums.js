@@ -22,13 +22,13 @@ const createRouter = () => {
   router.get("/", async (req, res) => {
     try {
       const results = await album.find().populate("artist");
-        if (req.query.artist) {
-          const queryArtist = await album.find({
-            artist: { _id: req.query.artist },
-          });
-          res.send(queryArtist);
-        }
-        res.send(results);
+      if (req.query.artist) {
+        const queryArtist = await album.find({
+          artist: { _id: req.query.artist },
+        });
+        res.send(queryArtist);
+      }
+      res.send(results);
     } catch (e) {
       res.status(500).send(e);
     }
@@ -44,15 +44,12 @@ const createRouter = () => {
   router.post("/", uploads.single("cover"), async (req, res) => {
     try {
       const result = { ...req.body };
-      const oldAlbum = album.findOne({ title: req.body.title });
-      if (!oldAlbum) {
         const newAlbum = new album(result);
         if (req.file) {
           newAlbum.cover = req.file.filename;
         }
         await newAlbum.save();
         res.send(newAlbum);
-      }else res.send({ message: "Album has been already created" });
     } catch (e) {
       res.status(404).send(e);
     }

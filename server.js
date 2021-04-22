@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const albums = require("./app/albums");
 const tracks = require("./app/tracks");
 const users = require('./app/users');
+const trackHistory = require('./app/trackHistories');
 
 const port = 2100;
 
@@ -25,6 +26,7 @@ const run = async () => {
   app.use("/albums", albums());
   app.use("/tracks", tracks());
   app.use("/users", users());
+  app.use('/track_history', trackHistory());
 
   app.listen(port, () => {
     console.log("Server started at port " + port);
