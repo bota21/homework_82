@@ -5,14 +5,16 @@ const track = require("../models/trackDB");
 const createRouter = () => {
   router.get("/", async (req, res) => {
     try {
-      const results = await track.find().populate("album");
+      const results = await track.find().populate({ path: "album", populate: { path: "artist" } });
       if (req.query.album) {
-        const queryAlbum = await track.find({
-          album: { _id: req.query.album },
-        });
-        res.send(queryAlbum);
-      }     
-      res.send(results);
+        const queryAlbum = await track
+          .find({
+            album: { _id: req.query.album },
+          })
+          .populate({ path: "album", populate: { path: "artist" } }).sort({num: 1});
+        return res.send(queryAlbum);
+      }
+      return res.send(results);
     } catch (e) {
       res.status(500).send(e);
     }
@@ -27,8 +29,7 @@ const createRouter = () => {
   });
   router.post("/", async (req, res) => {
     try {
-      const result = { ...req.body };
-      const newTrack = new track(result);
+      const newTrack = new track(req.body);
       await newTrack.save();
       res.send(newTrack);
     } catch (e) {

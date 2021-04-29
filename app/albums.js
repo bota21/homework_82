@@ -25,9 +25,9 @@ const createRouter = () => {
         const queryArtist = await album.find({
           artist: { _id: req.query.artist },
         }).populate('artist').sort({year: 1});
-        res.send(queryArtist);
+       return res.send(queryArtist);
       }
-      res.send(results);
+      return res.send(results);
     } catch (e) {
       res.status(500).send(e);
     }
