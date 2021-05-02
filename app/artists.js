@@ -5,6 +5,8 @@ const multer = require("multer");
 const artist = require("../models/artistDB");
 const config = require("../config");
 const path = require("path");
+const auth = require("../middleware/auth");
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -14,11 +16,11 @@ const storage = multer.diskStorage({
     cd(null, nanoid() + path.extname(file.originalname));
   },
 });
-
+ 
 const uploads = multer({ storage });
 
 const createRouter = () => {
-  router.get("/", async (req, res) => {
+  router.get("/", auth, async (req, res) => {
     try {
       const results = await artist.find();
       res.send(results);
@@ -26,15 +28,15 @@ const createRouter = () => {
       res.sendStatus(500);
     }
   });
-  router.get("/:id", async (req, res) => {
+  router.get("/:id", auth, async (req, res) => {
     try {
       const results = await artist.findById(req.params.id);
       res.send(results);
     } catch {
-      res.sendStatus(500);
+      res.sendStatus(500); 
     }
   });
-  router.post("/", uploads.single("image"), async (req, res) => {
+  router.post("/", auth, uploads.single("image"), async (req, res) => {
     try {
       const result = { ...req.body };
       const oldArtist = await artist.findOne({title: req.body.title});
@@ -51,7 +53,7 @@ const createRouter = () => {
       res.sendStatus(404);
     }
   });
-  router.put("/:id", uploads.single("image"), async (req, res) => {
+  router.put("/:id", auth, uploads.single("image"), async (req, res) => {
     try {
       const result = { ...req.body };
       const newArtist = await artist.findByIdAndUpdate(req.params.id, result);
@@ -60,7 +62,7 @@ const createRouter = () => {
       res.status(400).send(e);
     }
   });
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", auth, async (req, res) => {
     try {
       await artist.findByIdAndDelete(req.params.id);
       res.send(`Artist with id ${req.params.id} deleted successfully`);

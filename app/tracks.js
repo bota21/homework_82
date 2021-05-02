@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const track = require("../models/trackDB");
+const auth = require('../middleware/auth');
 
 const createRouter = () => {
 
-  router.get("/", async (req, res) => {
+  router.get("/", auth, async (req, res) => {
     try {
       const results = await track
         .find()
@@ -24,7 +25,7 @@ const createRouter = () => {
     }
   });
 
-  router.get("/:id", async (req, res) => {
+  router.get("/:id", auth, async (req, res) => {
     try {
       const results = await track.findById(req.params.id).populate("album");
       res.send(results);
@@ -33,7 +34,7 @@ const createRouter = () => {
     }
   });
 
-  router.post("/", async (req, res) => {
+  router.post("/", auth, async (req, res) => {
     const arr = [];
     const albums = await track.find({ album: req.body.album });
     if (albums.length !== 0) {
@@ -60,7 +61,7 @@ const createRouter = () => {
     }
   });
 
-  router.put("/:id", async (req, res) => {
+  router.put("/:id", auth, async (req, res) => {
     try {
       const result = { ...req.body };
       const newTrack = await track.findByIdAndUpdate(req.params.id, result);
@@ -70,7 +71,7 @@ const createRouter = () => {
     }
   });
 
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", auth, async (req, res) => {
     try {
       await track.findByIdAndDelete(req.params.id);
       res.send(`Track with id ${req.params.id} deleted successfully`);

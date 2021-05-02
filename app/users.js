@@ -7,28 +7,29 @@ const createRouter = () => {
     try {
       const user = new Users(req.body);
       user.generateToken();
+      console.log(user);
       await user.save();
-      return res.send(user);
+      res.send(user);
     } catch (e) {
       res.status(400).send(e);
     }
   });
 
-  router.post("/session", async (req, res) => {
+  router.post("/sessions", async (req, res) => {
     const user = await Users.findOne({ username: req.body.username });
 
     if (!user) {
-      return res.status(400).send("User not found");
-    };
-
+      return res.status(400).send("Wrong username or password");
+    }
+ 
     const isMatch = await user.checkPassword(req.body.password);
 
     if (!isMatch) {
-      return res.status(400).send("Wrong password");
-    };
+      return res.status(400).send("Wrong username or password");
+    }
     user.generateToken();
-    await user.save();
-    return res.send("Authentication passed");
+    await user.save({validateBeforeSave: false});
+    return res.send(user);
   });
 
   return router;

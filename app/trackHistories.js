@@ -1,24 +1,34 @@
 const express = require("express");
 const router = express.Router();
 const trackHistory = require("../models/trackHistoryDB");
-const User = require("../models/usersDB");
+const auth = require("../middleware/auth");
 
 const createRouter = () => {
-  router.post("/", async (req, res) => {
-    const token = req.get("Authorization");
-    if (!token) {
-      return res.status(401).send("No token present");
+  router.get("/", auth, async (req, res) => {
+    try {
+      const history = await trackHistory.find({ user: req.user._id }).populate({path: 'track', populate: { path: "album", populate: { path: "artist" }}});
+      res.send(history);
+    } catch (e) {
+      res.send(e);
     }
-    const user = await User.findOne({ token });
-    if (!user) {
-      return res.status(401).send({ error: "Unauthorized" });
+  });
+  router.post("/", auth, async (req, res) => {
+    try {
+      const result = new trackHistory(req.body);
+      result.user = req.user._id;
+      const now = new Date();
+      const day = now.getDay() + 1;
+      const month = now.getMonth() + 1;
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const dateStr = (day < 10 ? '0' : '') + day + '.' + (month < 10 ? '0' : '') + month  + '.' + now.getFullYear() + ' ' + (hour < 10 ? '0' : '') + hour + ':' + (minute < 10 ? '0' : '') + minute;
+      result.datetime = dateStr;
+      result.track = req.body.track;
+      await result.save();
+      res.send(result);
+    } catch (e) {
+      res.status(400).send(e);
     }
-    const result = new trackHistory(req.body);
-    const currentUser = await User.findOne({ token });
-    result.user = currentUser._id;
-    result.datetime = new Date();
-    res.send(result);
-    result.save();
   });
   return router;
 };

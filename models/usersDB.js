@@ -10,6 +10,13 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     unique: true,
+    validate: {
+      validator: async (value) => {
+        const user = await User.findOne({ username: value });
+        if (user) return false;
+      },
+      message: "This user is already registered",
+    },
   },
   password: {
     type: String,
@@ -26,7 +33,7 @@ UserSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt(SALT_WORK_FACTOR);
   const hash = await bcrypt.hash(this.password, salt);
   this.password = hash;
-  next(); 
+  next();
 });
 
 UserSchema.set("toJSON", {
@@ -44,5 +51,5 @@ UserSchema.methods.checkPassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-const User = mongoose.model("user", UserSchema);
+const User = mongoose.model("User", UserSchema);
 module.exports = User;
