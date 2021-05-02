@@ -6,7 +6,7 @@ const auth = require("../middleware/auth");
 const createRouter = () => {
   router.get("/", auth, async (req, res) => {
     try {
-      const history = await trackHistory.find({ user: req.user._id }).populate({path: 'track', populate: { path: "album", populate: { path: "artist" }}});
+      const history = await trackHistory.find({ user: req.user._id }).populate({path: 'track', populate: { path: "album", populate: { path: "artist" }}}).sort({datetime: -1});
       res.send(history);
     } catch (e) {
       res.send(e);
