@@ -17,7 +17,7 @@ const createRouter = () => {
       const result = new trackHistory(req.body);
       result.user = req.user._id;
       const now = new Date();
-      const day = now.getDate() + 1;
+      const day = now.getDate();
       const month = now.getMonth() + 1;
       const hour = now.getHours();
       const minute = now.getMinutes();
