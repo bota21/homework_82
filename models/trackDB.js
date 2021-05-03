@@ -20,6 +20,9 @@ const TrackSchema = new Schema({
     unique: true,
     required: true
   },
+  youtube: {
+    type: String
+  }
 });
 
 const Track = mongoose.model("track", TrackSchema);
