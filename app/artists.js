@@ -26,7 +26,7 @@ const createRouter = () => {
       res.send(results);
     } catch {
       res.sendStatus(500);
-    }
+    } 
   });
   router.get("/:id", auth, async (req, res) => {
     try {

@@ -7,11 +7,12 @@ const albums = require("./app/albums");
 const tracks = require("./app/tracks");
 const users = require('./app/users');
 const trackHistory = require('./app/trackHistories');
+const config = require('./config');
 
 const port = 2100;
 
 const run = async () => {
-  await mongoose.connect("mongodb://localhost/music", {
+  await mongoose.connect(config.db.url + config.db.name, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
