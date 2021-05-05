@@ -44,7 +44,7 @@ db.once("open", async () => {
   const [ritaOra, bebeRexha] = await Artist.create(
     {
       title: "Rita Ora",
-      image: "RitaOra.png",
+      image: "RitaOra.jpg",
       description: "British singer, songwriter and actress",
     },
     {
