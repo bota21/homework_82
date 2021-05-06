@@ -42,11 +42,11 @@ const createRouter = () => {
 
     if (!user) return res.send(success);
 
-    user.token = user.generateToken();
+    user.generateToken();
     user.save({ validateBeforeSave: false });
 
     return res.send(success);
-  });
+  }); 
 
   return router;
 };
